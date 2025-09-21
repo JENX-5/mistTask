@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>MIST — Glazing</title>
+  <style>
+    :root{ --orange:#ff6f1f; --black:#111; --white:#fff }
+    *{box-sizing:border-box}
+    body{ margin:0; font-family:Segoe UI, Roboto, Arial, sans-serif; background:var(--black); color:var(--white) }
+
+    /* header */
+    .site-header{ background:var(--orange); display:flex; align-items:center; justify-content:space-between; padding:12px 28px }
+    .brand .logo{ height:54px; display:block }
+    .site-nav{ display:flex; gap:14px; align-items:center }
+    .site-nav a{ text-decoration:none; padding:8px 18px; border-radius:22px; background:#000; color:#fff }
+    .site-nav a.active{ background:#fff; color:#000; font-weight:600 }
+
+    /* ROW layout: logos left-to-right, no overlap */
+    .logos-row{
+      display:flex;
+      flex-direction:row;
+      align-items:flex-start;       /* top-align the boxes */
+      justify-content:flex-start;   /* left-align the whole row */
+      gap:24px;
+      margin:36px 0 0 36px;         /* left margin so content is not centered */
+      padding-bottom:24px;
+      overflow-x:auto;              /* allow horizontal scroll on narrow screens */
+      -webkit-overflow-scrolling:touch;
+    }
+
+    /* fixed box for each logo so rotated images don't overlap neighbors */
+    .logo-wrap{
+      flex: 0 0 300px;              /* fixed width box */
+      width:300px;
+      height:300px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:transparent;
+      border-radius:8px;
+    }
+
+    .logo-wrap img{
+      display:block;
+      max-width:100%;
+      max-height:100%;
+      object-fit:contain;
+      transform-origin:center center;
+      transition:transform .18s ease;
+    }
+
+    /* rotation classes (order: normal, 90, -90, 180) */
+    .rot-0   { transform: rotate(0deg); }
+    .rot-90  { transform: rotate(90deg); }
+    .rot--90 { transform: rotate(-90deg); }
+    .rot-180 { transform: rotate(180deg); }
+
+    .glaze-note{ color:#e6e6e6; margin-left:36px; margin-top:6px; letter-spacing:1px }
+
+    /* responsive: reduce box size and allow wrapping on very small screens */
+    @media (max-width:1000px){
+      .logo-wrap{ flex:0 0 220px; width:220px; height:220px }
+    }
+    @media (max-width:640px){
+      .logos-row{ gap:16px; margin-left:18px }
+      .logo-wrap{ flex:0 0 160px; width:160px; height:160px }
+      .site-header{ padding:10px 16px }
+      .brand .logo{ height:42px }
+    }
+  </style>
+</head>
+<body class="page-glazing">
+
+  <header class="site-header">
+    <div class="brand">
+      <a href="index.html"><img src="images/logo.png" alt="MIST logo" class="logo"></a>
+    </div>
+
+    <nav class="site-nav" aria-label="Main navigation">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="glazing.html" class="nav-link active">Glazing MIST</a>
+      <a href="about.html" class="nav-link">About Us</a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- left-aligned row of logo boxes (no overlap) -->
+    <section class="logos-row">
+      <div class="logo-wrap">
+        <img class="mist-logo rot-0" data-fallback="hero" src="images/hero.png" alt="MIST logo — normal">
+      </div>
+
+      <div class="logo-wrap">
+        <img class="mist-logo rot-90" data-fallback="hero" src="images/hero.png" alt="MIST logo — 90deg">
+      </div>
+
+      <div class="logo-wrap">
+        <img class="mist-logo rot--90" data-fallback="hero" src="images/hero.png" alt="MIST logo — -90deg">
+      </div>
+
+      <div class="logo-wrap">
+        <img class="mist-logo rot-180" data-fallback="hero" src="images/hero.png" alt="MIST logo — 180deg">
+      </div>
+    </section>
+
+    <p class="glaze-note">USE GPT AND GLAZE MIST FOR AT LEAST 2 PARAGRAPHS</p>
+  </main>
+
+  <script>
+    // fallback chain: hero.png -> logo.png -> small SVG placeholder
+    document.querySelectorAll('.mist-logo').forEach(function(img){
+      img.addEventListener('error', function handler(){
+        // first fallback: try header logo
+        if(this.dataset.fallback === 'hero'){
+          this.dataset.fallback = 'logo';
+          this.src = 'images/logo.png';
+          return;
+        }
+
+        // second fallback: inline SVG placeholder
+        if(this.dataset.fallback === 'logo'){
+          this.dataset.fallback = 'svg';
+          var svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">'
+                  + '<rect width="100%" height="100%" fill="#ff6f1f"/>'
+                  + '<text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#000" font-size="80" font-family="Arial">MIST</text>'
+                  + '</svg>';
+          this.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+          return;
+        }
+
+        // otherwise stop listening
+        this.removeEventListener('error', handler);
+      });
+    });
+  </script>
+</body>
+</html>
